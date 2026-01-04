@@ -20,8 +20,10 @@ export function useCurrencyAPI() {
     error.value = null;
 
     try {
-      // Fetch supported fiat currencies
-      const fiatResponse = await axios.get(`${COINGECKO_API}/simple/supported_vs_currencies`);
+      // Fetch supported fiat currencies with timeout
+      const fiatResponse = await axios.get(`${COINGECKO_API}/simple/supported_vs_currencies`, {
+        timeout: 10000,
+      });
       const fiatCurrencies: Currency[] = fiatResponse.data.map((code: string) => ({
         id: code,
         symbol: code,
@@ -29,15 +31,16 @@ export function useCurrencyAPI() {
         type: 'fiat' as const,
       }));
 
-      // Fetch top cryptocurrencies
+      // Fetch top cryptocurrencies with timeout
       const cryptoResponse = await axios.get(`${COINGECKO_API}/coins/markets`, {
         params: {
           vs_currency: 'usd',
           order: 'market_cap_desc',
-          per_page: 100,
+          per_page: 50,
           page: 1,
           sparkline: false,
         },
+        timeout: 10000,
       });
 
       const cryptoCurrencies: Currency[] = cryptoResponse.data.map((coin: any) => ({
@@ -49,8 +52,29 @@ export function useCurrencyAPI() {
 
       currencies.value = [...fiatCurrencies, ...cryptoCurrencies];
     } catch (err: any) {
-      error.value = err.message || 'Failed to fetch currencies';
       console.error('Error fetching currencies:', err);
+      
+      // Use fallback currencies if API fails
+      const fallbackCurrencies: Currency[] = [
+        { id: 'usd', symbol: 'usd', name: 'US Dollar', type: 'fiat' },
+        { id: 'eur', symbol: 'eur', name: 'Euro', type: 'fiat' },
+        { id: 'gbp', symbol: 'gbp', name: 'British Pound', type: 'fiat' },
+        { id: 'jpy', symbol: 'jpy', name: 'Japanese Yen', type: 'fiat' },
+        { id: 'cad', symbol: 'cad', name: 'Canadian Dollar', type: 'fiat' },
+        { id: 'aud', symbol: 'aud', name: 'Australian Dollar', type: 'fiat' },
+        { id: 'chf', symbol: 'chf', name: 'Swiss Franc', type: 'fiat' },
+        { id: 'cny', symbol: 'cny', name: 'Chinese Yuan', type: 'fiat' },
+        { id: 'inr', symbol: 'inr', name: 'Indian Rupee', type: 'fiat' },
+        { id: 'bitcoin', symbol: 'btc', name: 'Bitcoin', type: 'crypto' },
+        { id: 'ethereum', symbol: 'eth', name: 'Ethereum', type: 'crypto' },
+        { id: 'tether', symbol: 'usdt', name: 'Tether', type: 'crypto' },
+        { id: 'binancecoin', symbol: 'bnb', name: 'BNB', type: 'crypto' },
+        { id: 'solana', symbol: 'sol', name: 'Solana', type: 'crypto' },
+        { id: 'ripple', symbol: 'xrp', name: 'XRP', type: 'crypto' },
+      ];
+      
+      currencies.value = fallbackCurrencies;
+      error.value = 'Using cached currencies. ' + (err.response?.status === 429 ? 'API rate limit reached.' : 'Unable to fetch live data.');
     } finally {
       isLoading.value = false;
     }
@@ -83,6 +107,7 @@ export function useCurrencyAPI() {
             ids: baseCurrency,
             vs_currencies: targetCurrencies.join(','),
           },
+          timeout: 10000,
         });
 
         rates = response.data[baseCurrency] || {};
@@ -106,6 +131,7 @@ export function useCurrencyAPI() {
               ids: cryptoTargets.join(','),
               vs_currencies: baseCurrency,
             },
+            timeout: 10000,
           });
 
           Object.keys(cryptoResponse.data).forEach(coinId => {
@@ -124,6 +150,7 @@ export function useCurrencyAPI() {
               ids: 'bitcoin',
               vs_currencies: [baseCurrency, ...fiatTargets].join(','),
             },
+            timeout: 10000,
           });
 
           const btcRates = btcResponse.data.bitcoin;
@@ -145,8 +172,11 @@ export function useCurrencyAPI() {
       exchangeRates.value = rates;
       lastUpdated.value = new Date();
     } catch (err: any) {
-      error.value = err.message || 'Failed to fetch exchange rates';
       console.error('Error fetching exchange rates:', err);
+      // Don't set error here - just log it. Keep previous rates if available.
+      if (Object.keys(exchangeRates.value).length === 0) {
+        error.value = 'Unable to fetch exchange rates. ' + (err.response?.status === 429 ? 'API rate limit reached.' : 'Please try again later.');
+      }
     } finally {
       isLoading.value = false;
     }
