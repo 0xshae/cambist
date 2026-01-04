@@ -43,21 +43,22 @@
         <p class="text-sm text-gray-500">Fetching real-time exchange rates</p>
       </div>
 
-      <!-- Error state -->
-      <div v-else-if="error" class="bg-red-50 border border-red-200 rounded-2xl p-6 max-w-2xl mx-auto">
+      <!-- Error state / Warning -->
+      <div v-else-if="error" class="bg-amber-50 border border-amber-200 rounded-2xl p-6 max-w-2xl mx-auto mb-8">
         <div class="flex items-start space-x-3">
-          <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
-            <AlertCircle :size="20" class="text-red-600" />
+          <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <AlertCircle :size="20" class="text-amber-600" />
           </div>
           <div>
-            <h3 class="font-semibold text-red-900 mb-1">Error loading data</h3>
-            <p class="text-red-700 text-sm">{{ error }}</p>
+            <h3 class="font-semibold text-amber-900 mb-1">Limited functionality</h3>
+            <p class="text-amber-700 text-sm">{{ error }}</p>
+            <p class="text-amber-600 text-xs mt-2">You can still use the app with available currencies.</p>
           </div>
         </div>
       </div>
 
       <!-- Converter interface -->
-      <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+      <div v-if="!initialLoading" class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
         <!-- Left: Source currency -->
         <div class="space-y-6">
           <div class="flex items-center justify-between mb-2">
