@@ -1,9 +1,9 @@
 <template>
-  <div class="border border-gray-200 rounded-2xl bg-white hover:border-gray-300 transition-all">
-    <div class="p-6">
+  <div class="bg-white rounded-3xl shadow-xl shadow-gray-900/5 border border-gray-200/60 overflow-hidden hover:shadow-2xl hover:shadow-gray-900/10 transition-all duration-300">
+    <div class="p-8">
       <!-- Amount input -->
-      <div class="mb-6">
-        <label class="block text-sm font-medium text-gray-500 mb-3">Amount</label>
+      <div class="mb-8">
+        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">Amount</label>
         <input
           :value="modelValue"
           @input="handleInput"
@@ -11,33 +11,42 @@
           step="any"
           min="0"
           placeholder="0.00"
-          class="w-full text-4xl font-semibold text-gray-900 bg-transparent border-none focus:outline-none focus:ring-0 p-0 placeholder-gray-300"
+          class="w-full text-5xl font-bold text-gray-900 bg-transparent border-none focus:outline-none focus:ring-0 p-0 placeholder-gray-300"
         />
       </div>
 
+      <!-- Divider -->
+      <div class="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-6"></div>
+
       <!-- Currency selector -->
+      <div class="mb-2">
+        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Currency</label>
+      </div>
       <button
         @click="showSelector = true"
-        class="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors group"
+        class="w-full flex items-center justify-between p-5 bg-gradient-to-br from-gray-50 to-gray-100/50 hover:from-blue-50 hover:to-indigo-50 border border-gray-200 hover:border-blue-300 rounded-2xl transition-all duration-300 group shadow-sm hover:shadow-md"
       >
-        <div v-if="selectedCurrency" class="flex items-center space-x-3">
-          <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
-            <span class="text-2xl">{{ getCurrencyIcon(selectedCurrency) }}</span>
+        <div v-if="selectedCurrency" class="flex items-center space-x-4">
+          <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+            <span class="text-3xl">{{ getCurrencyIcon(selectedCurrency) }}</span>
           </div>
           <div class="text-left">
-            <div class="font-semibold text-gray-900 text-lg">{{ selectedCurrency.symbol.toUpperCase() }}</div>
-            <div class="text-sm text-gray-500">{{ selectedCurrency.name }}</div>
+            <div class="font-bold text-gray-900 text-xl">{{ selectedCurrency.symbol.toUpperCase() }}</div>
+            <div class="text-sm text-gray-600">{{ selectedCurrency.name }}</div>
           </div>
         </div>
-        <div v-else class="flex items-center space-x-3">
-          <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
-            <span class="text-2xl">💰</span>
+        <div v-else class="flex items-center space-x-4">
+          <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
+            <span class="text-3xl">💰</span>
           </div>
           <div class="text-left">
-            <div class="font-medium text-gray-500">Select currency</div>
+            <div class="font-semibold text-gray-500">Select currency</div>
+            <div class="text-sm text-gray-400">Choose from 100+ options</div>
           </div>
         </div>
-        <ChevronDown :size="20" class="text-gray-400 group-hover:text-gray-600 transition-colors" />
+        <div class="flex items-center justify-center w-10 h-10 bg-white/80 rounded-lg group-hover:bg-white transition-colors">
+          <ChevronDown :size="20" class="text-gray-400 group-hover:text-blue-600 transition-colors" />
+        </div>
       </button>
     </div>
 
@@ -107,3 +116,4 @@ const getCurrencyIcon = (currency: Currency) => {
   return icons[currency.id] || icons[currency.symbol] || (currency.type === 'crypto' ? '🪙' : '💰');
 };
 </script>
+
