@@ -1,52 +1,54 @@
 <template>
-  <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" @click="closeModal">
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[80vh] flex flex-col" @click.stop>
+  <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4" @click="closeModal">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg max-h-[85vh] flex flex-col" @click.stop>
       <!-- Header -->
-      <div class="px-6 py-4 border-b border-gray-200">
+      <div class="px-8 py-6 border-b border-gray-200">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-xl font-semibold text-gray-900">Select Currency</h2>
+          <h2 class="text-2xl font-semibold text-gray-900">Select Currency</h2>
           <button
             @click="closeModal"
-            class="text-gray-400 hover:text-gray-600 transition-colors"
+            class="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg p-2 transition-colors"
             aria-label="Close"
           >
-            <X :size="24" />
+            <X :size="20" />
           </button>
         </div>
         
         <!-- Search input -->
         <div class="relative">
-          <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" :size="20" />
+          <Search class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" :size="20" />
           <input
             v-model="searchQuery"
             type="text"
             placeholder="Search currencies..."
-            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            class="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition-colors"
           />
         </div>
       </div>
 
       <!-- Currency list -->
-      <div class="overflow-y-auto flex-1 px-6 py-4">
+      <div class="overflow-y-auto flex-1 px-8 py-6">
         <!-- Popular currencies -->
         <div v-if="filteredPopular.length > 0 && !searchQuery" class="mb-6">
-          <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Popular</h3>
+          <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Popular</h3>
           <div class="space-y-1">
             <button
               v-for="currency in filteredPopular"
               :key="currency.id"
               @click="selectCurrency(currency)"
               :disabled="isDisabled(currency)"
-              class="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-left"
+              class="w-full flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-left group"
             >
               <div class="flex items-center space-x-3">
-                <span class="text-2xl">{{ getCurrencyIcon(currency) }}</span>
+                <div class="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center group-hover:bg-white">
+                  <span class="text-xl">{{ getCurrencyIcon(currency) }}</span>
+                </div>
                 <div>
-                  <div class="font-medium text-gray-900">{{ currency.symbol.toUpperCase() }}</div>
+                  <div class="font-semibold text-gray-900">{{ currency.symbol.toUpperCase() }}</div>
                   <div class="text-sm text-gray-500">{{ currency.name }}</div>
                 </div>
               </div>
-              <span class="text-xs px-2 py-1 rounded" :class="currency.type === 'crypto' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'">
+              <span class="text-xs px-2.5 py-1 rounded-full font-medium" :class="currency.type === 'crypto' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'">
                 {{ currency.type }}
               </span>
             </button>
@@ -55,19 +57,21 @@
 
         <!-- Crypto currencies -->
         <div v-if="filteredCrypto.length > 0" class="mb-6">
-          <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Crypto</h3>
+          <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Crypto</h3>
           <div class="space-y-1">
             <button
               v-for="currency in filteredCrypto"
               :key="currency.id"
               @click="selectCurrency(currency)"
               :disabled="isDisabled(currency)"
-              class="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-left"
+              class="w-full flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-left group"
             >
               <div class="flex items-center space-x-3">
-                <span class="text-2xl">{{ getCurrencyIcon(currency) }}</span>
+                <div class="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center group-hover:bg-white">
+                  <span class="text-xl">{{ getCurrencyIcon(currency) }}</span>
+                </div>
                 <div>
-                  <div class="font-medium text-gray-900">{{ currency.symbol.toUpperCase() }}</div>
+                  <div class="font-semibold text-gray-900">{{ currency.symbol.toUpperCase() }}</div>
                   <div class="text-sm text-gray-500">{{ currency.name }}</div>
                 </div>
               </div>
@@ -77,19 +81,21 @@
 
         <!-- Fiat currencies -->
         <div v-if="filteredFiat.length > 0" class="mb-6">
-          <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Fiat</h3>
+          <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Fiat</h3>
           <div class="space-y-1">
             <button
               v-for="currency in filteredFiat"
               :key="currency.id"
               @click="selectCurrency(currency)"
               :disabled="isDisabled(currency)"
-              class="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-left"
+              class="w-full flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-left group"
             >
               <div class="flex items-center space-x-3">
-                <span class="text-2xl">{{ getCurrencyIcon(currency) }}</span>
+                <div class="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center group-hover:bg-white">
+                  <span class="text-xl">{{ getCurrencyIcon(currency) }}</span>
+                </div>
                 <div>
-                  <div class="font-medium text-gray-900">{{ currency.symbol.toUpperCase() }}</div>
+                  <div class="font-semibold text-gray-900">{{ currency.symbol.toUpperCase() }}</div>
                   <div class="text-sm text-gray-500">{{ currency.name }}</div>
                 </div>
               </div>
@@ -98,8 +104,12 @@
         </div>
 
         <!-- No results -->
-        <div v-if="noResults" class="text-center py-8 text-gray-500">
-          No currencies found
+        <div v-if="noResults" class="text-center py-12">
+          <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Search :size="28" class="text-gray-400" />
+          </div>
+          <p class="text-gray-500 font-medium">No currencies found</p>
+          <p class="text-sm text-gray-400 mt-1">Try a different search term</p>
         </div>
       </div>
     </div>
@@ -187,4 +197,3 @@ const closeModal = () => {
   emit('close');
 };
 </script>
-

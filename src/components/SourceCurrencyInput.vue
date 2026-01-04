@@ -1,42 +1,44 @@
 <template>
-  <div class="bg-white rounded-xl shadow-lg p-6">
-    <label class="block text-sm font-medium text-gray-700 mb-2">Source Currency</label>
-    
-    <div class="space-y-4">
-      <!-- Currency selector button -->
+  <div class="border border-gray-200 rounded-2xl bg-white hover:border-gray-300 transition-all">
+    <div class="p-6">
+      <!-- Amount input -->
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-500 mb-3">Amount</label>
+        <input
+          :value="modelValue"
+          @input="handleInput"
+          type="number"
+          step="any"
+          min="0"
+          placeholder="0.00"
+          class="w-full text-4xl font-semibold text-gray-900 bg-transparent border-none focus:outline-none focus:ring-0 p-0 placeholder-gray-300"
+        />
+      </div>
+
+      <!-- Currency selector -->
       <button
         @click="showSelector = true"
-        class="w-full flex items-center justify-between px-4 py-3 border-2 border-gray-300 rounded-lg hover:border-blue-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+        class="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors group"
       >
         <div v-if="selectedCurrency" class="flex items-center space-x-3">
-          <span class="text-2xl">{{ getCurrencyIcon(selectedCurrency) }}</span>
+          <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
+            <span class="text-2xl">{{ getCurrencyIcon(selectedCurrency) }}</span>
+          </div>
           <div class="text-left">
-            <div class="font-semibold text-gray-900">{{ selectedCurrency.symbol.toUpperCase() }}</div>
+            <div class="font-semibold text-gray-900 text-lg">{{ selectedCurrency.symbol.toUpperCase() }}</div>
             <div class="text-sm text-gray-500">{{ selectedCurrency.name }}</div>
           </div>
         </div>
-        <div v-else class="text-gray-500">Select currency</div>
-        <ChevronDown :size="20" class="text-gray-400" />
-      </button>
-
-      <!-- Amount input -->
-      <div class="relative">
-        <label class="block text-sm font-medium text-gray-700 mb-2">Amount</label>
-        <div class="relative">
-          <input
-            :value="modelValue"
-            @input="handleInput"
-            type="number"
-            step="any"
-            min="0"
-            placeholder="Enter amount"
-            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
-          />
-          <div v-if="selectedCurrency" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">
-            {{ selectedCurrency.symbol.toUpperCase() }}
+        <div v-else class="flex items-center space-x-3">
+          <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
+            <span class="text-2xl">💰</span>
+          </div>
+          <div class="text-left">
+            <div class="font-medium text-gray-500">Select currency</div>
           </div>
         </div>
-      </div>
+        <ChevronDown :size="20" class="text-gray-400 group-hover:text-gray-600 transition-colors" />
+      </button>
     </div>
 
     <!-- Currency selector modal -->
@@ -105,4 +107,3 @@ const getCurrencyIcon = (currency: Currency) => {
   return icons[currency.id] || icons[currency.symbol] || (currency.type === 'crypto' ? '🪙' : '💰');
 };
 </script>
-

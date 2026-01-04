@@ -1,94 +1,116 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+  <div class="min-h-screen bg-white">
     <!-- Header -->
-    <header class="bg-white shadow-sm">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <header class="border-b border-gray-200 bg-white">
+      <div class="max-w-[1400px] mx-auto px-8 py-6">
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-3">
-            <DollarSign :size="32" class="text-blue-600" />
-            <h1 class="text-3xl font-bold text-gray-900">Currency Converter</h1>
+            <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+              <DollarSign :size="24" class="text-white" />
+            </div>
+            <h1 class="text-2xl font-semibold text-gray-900">Currency Converter</h1>
           </div>
-          <div class="flex items-center space-x-4">
+          <div class="flex items-center space-x-6">
+            <div v-if="lastUpdated" class="text-sm text-gray-500">
+              Last updated {{ formatTime(lastUpdated) }}
+            </div>
             <button
               @click="handleRefresh"
               :disabled="isLoading"
-              class="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:text-blue-600 transition-colors disabled:opacity-50"
+              class="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               title="Refresh rates"
             >
-              <RefreshCw :size="20" :class="{ 'animate-spin': isLoading }" />
-              <span class="hidden sm:inline">Refresh</span>
+              <RefreshCw :size="18" :class="{ 'animate-spin': isLoading }" />
+              <span>Refresh</span>
             </button>
-            <div v-if="lastUpdated" class="text-sm text-gray-500">
-              Updated: {{ formatTime(lastUpdated) }}
-            </div>
           </div>
         </div>
       </div>
     </header>
 
     <!-- Main content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="max-w-[1400px] mx-auto px-8 py-12">
       <!-- Loading state -->
-      <div v-if="initialLoading" class="text-center py-12">
+      <div v-if="initialLoading" class="text-center py-24">
         <RefreshCw :size="48" class="animate-spin mx-auto text-blue-600 mb-4" />
         <p class="text-gray-600">Loading currencies...</p>
       </div>
 
       <!-- Error state -->
-      <div v-else-if="error" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+      <div v-else-if="error" class="bg-red-50 border border-red-200 rounded-2xl p-6 max-w-2xl mx-auto">
         <div class="flex items-start space-x-3">
           <AlertCircle :size="24" class="text-red-600 flex-shrink-0 mt-0.5" />
           <div>
-            <h3 class="font-semibold text-red-900">Error</h3>
-            <p class="text-red-700">{{ error }}</p>
+            <h3 class="font-semibold text-red-900 mb-1">Error loading data</h3>
+            <p class="text-red-700 text-sm">{{ error }}</p>
           </div>
         </div>
       </div>
 
       <!-- Converter interface -->
-      <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Source currency -->
-        <SourceCurrencyInput
-          :model-value="sourceAmount"
-          :selected-currency="sourceCurrency"
-          :currencies="currencies"
-          :popular-currencies="popularCurrencies"
-          :crypto-currencies="cryptoCurrencies"
-          :fiat-currencies="fiatCurrencies"
-          :disabled-currencies="disabledCurrencyIds"
-          @update:model-value="updateAmount"
-          @update:selected-currency="handleUpdateSourceCurrency"
-        />
+      <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Left: Source currency -->
+        <div class="space-y-6">
+          <div>
+            <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">You Send</h2>
+            <SourceCurrencyInput
+              :model-value="sourceAmount"
+              :selected-currency="sourceCurrency"
+              :currencies="currencies"
+              :popular-currencies="popularCurrencies"
+              :crypto-currencies="cryptoCurrencies"
+              :fiat-currencies="fiatCurrencies"
+              :disabled-currencies="disabledCurrencyIds"
+              @update:model-value="updateAmount"
+              @update:selected-currency="handleUpdateSourceCurrency"
+            />
+          </div>
 
-        <!-- Target currencies -->
-        <TargetCurrencyList
-          :target-currencies="targetCurrencies"
-          :conversions="conversions"
-          :can-add-more="canAddMore"
-          :max-targets="10"
-          :is-loading="isLoading"
-          @add="showAddCurrency = true"
-          @remove="removeTarget"
-          @swap="swapCurrency"
-        />
-      </div>
+          <!-- Info cards -->
+          <div class="space-y-4 pt-8">
+            <div class="bg-blue-50 rounded-2xl p-6">
+              <div class="flex items-start space-x-3">
+                <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Zap :size="20" class="text-white" />
+                </div>
+                <div>
+                  <h3 class="font-semibold text-gray-900 mb-1">Real-time Rates</h3>
+                  <p class="text-sm text-gray-600">Exchange rates are updated every 60 seconds automatically using CoinGecko API.</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-purple-50 rounded-2xl p-6">
+              <div class="flex items-start space-x-3">
+                <div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <TrendingUp :size="20" class="text-white" />
+                </div>
+                <div>
+                  <h3 class="font-semibold text-gray-900 mb-1">Multi-Currency</h3>
+                  <p class="text-sm text-gray-600">Convert to up to 10 different currencies at once. Mix crypto and fiat freely.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      <!-- Info section -->
-      <div class="mt-8 bg-white rounded-xl shadow-lg p-6">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">About This Converter</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-gray-600">
-          <div>
-            <h3 class="font-semibold text-gray-900 mb-2">One-to-Many Conversion</h3>
-            <p>Convert one source currency to multiple target currencies simultaneously.</p>
+        <!-- Right: Target currencies -->
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">You Receive</h2>
+            <span class="text-sm text-gray-500">{{ targetCurrencies.length }} / 10</span>
           </div>
-          <div>
-            <h3 class="font-semibold text-gray-900 mb-2">Crypto & Fiat</h3>
-            <p>Support for both cryptocurrency and traditional fiat currencies.</p>
-          </div>
-          <div>
-            <h3 class="font-semibold text-gray-900 mb-2">Real-time Rates</h3>
-            <p>Exchange rates powered by CoinGecko API with auto-refresh.</p>
-          </div>
+          
+          <TargetCurrencyList
+            :target-currencies="targetCurrencies"
+            :conversions="conversions"
+            :can-add-more="canAddMore"
+            :max-targets="10"
+            :is-loading="isLoading"
+            @add="showAddCurrency = true"
+            @remove="removeTarget"
+            @swap="swapCurrency"
+          />
         </div>
       </div>
     </main>
@@ -109,7 +131,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { DollarSign, RefreshCw, AlertCircle } from 'lucide-vue-next';
+import { DollarSign, RefreshCw, AlertCircle, Zap, TrendingUp } from 'lucide-vue-next';
 import SourceCurrencyInput from './components/SourceCurrencyInput.vue';
 import TargetCurrencyList from './components/TargetCurrencyList.vue';
 import CurrencySelector from './components/CurrencySelector.vue';
