@@ -110,8 +110,13 @@ export function useConverter() {
 
   // Swap source with a target currency
   const swapCurrency = (targetId: string) => {
-    const target = targetCurrencies.value.find(t => t.id === targetId);
-    if (!target || !sourceCurrency.value) {
+    const targetIndex = targetCurrencies.value.findIndex(t => t.id === targetId);
+    if (targetIndex === -1 || !sourceCurrency.value) {
+      return;
+    }
+
+    const target = targetCurrencies.value[targetIndex];
+    if (!target) {
       return;
     }
 
@@ -121,8 +126,12 @@ export function useConverter() {
     // Set new source
     sourceCurrencyId.value = newSource.id;
 
-    // Replace the target with the old source
-    target.currency = oldSource;
+    // Create a new target object with the old source currency
+    // This ensures Vue's reactivity properly detects the change
+    targetCurrencies.value[targetIndex] = {
+      id: `target-${oldSource.id}-${Date.now()}`,
+      currency: oldSource,
+    };
   };
 
   // Update source amount
