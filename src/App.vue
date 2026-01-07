@@ -77,25 +77,6 @@
             @update:model-value="updateAmount"
             @update:selected-currency="handleUpdateSourceCurrency"
           />
-
-          <!-- Feature highlights -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
-            <div class="bg-white/60 backdrop-blur-sm border border-blue-200/60 rounded-2xl p-5 hover:shadow-lg hover:shadow-blue-500/10 transition-all">
-              <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-3 shadow-md shadow-blue-500/30">
-                <Zap :size="20" class="text-white" />
-              </div>
-              <h3 class="font-semibold text-gray-900 mb-1.5">Live Rates</h3>
-              <p class="text-sm text-gray-600 leading-relaxed">Real-time exchange rates updated every minute</p>
-            </div>
-            
-            <div class="bg-white/60 backdrop-blur-sm border border-purple-200/60 rounded-2xl p-5 hover:shadow-lg hover:shadow-purple-500/10 transition-all">
-              <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-3 shadow-md shadow-purple-500/30">
-                <TrendingUp :size="20" class="text-white" />
-              </div>
-              <h3 class="font-semibold text-gray-900 mb-1.5">Multi-Convert</h3>
-              <p class="text-sm text-gray-600 leading-relaxed">Convert to up to 10 currencies simultaneously</p>
-            </div>
-          </div>
         </div>
 
         <!-- Right: Target currencies -->
@@ -140,7 +121,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { DollarSign, RefreshCw, AlertCircle, Zap, TrendingUp } from 'lucide-vue-next';
+import { DollarSign, RefreshCw, AlertCircle } from 'lucide-vue-next';
 import SourceCurrencyInput from './components/SourceCurrencyInput.vue';
 import TargetCurrencyList from './components/TargetCurrencyList.vue';
 import CurrencySelector from './components/CurrencySelector.vue';
