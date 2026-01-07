@@ -101,16 +101,66 @@ export function useCurrencyAPI() {
       let rates: ExchangeRate = {};
 
       if (baseCurrencyObj.type === 'crypto') {
-        // For crypto base, use the coin price endpoint
-        const response = await axios.get(`${COINGECKO_API}/simple/price`, {
-          params: {
-            ids: baseCurrency,
-            vs_currencies: targetCurrencies.join(','),
-          },
-          timeout: 10000,
+        // For crypto base, separate fiat and crypto targets
+        const cryptoTargets = targetCurrencies.filter(tc => {
+          const curr = currencies.value.find(c => c.id === tc || c.symbol === tc);
+          return curr?.type === 'crypto';
         });
 
-        rates = response.data[baseCurrency] || {};
+        const fiatTargets = targetCurrencies.filter(tc => {
+          const curr = currencies.value.find(c => c.id === tc || c.symbol === tc);
+          return curr?.type === 'fiat';
+        });
+
+        // Get crypto to fiat rates directly
+        if (fiatTargets.length > 0) {
+          const fiatResponse = await axios.get(`${COINGECKO_API}/simple/price`, {
+            params: {
+              ids: baseCurrency,
+              vs_currencies: fiatTargets.join(','),
+            },
+            timeout: 10000,
+          });
+
+          const fiatRates = fiatResponse.data[baseCurrency] || {};
+          Object.keys(fiatRates).forEach(fiatId => {
+            rates[fiatId] = fiatRates[fiatId];
+          });
+        }
+
+        // For crypto to crypto, use USD as intermediary
+        if (cryptoTargets.length > 0) {
+          // Get base crypto price in USD
+          const baseResponse = await axios.get(`${COINGECKO_API}/simple/price`, {
+            params: {
+              ids: baseCurrency,
+              vs_currencies: 'usd',
+            },
+            timeout: 10000,
+          });
+
+          const baseUsdPrice = baseResponse.data[baseCurrency]?.usd;
+
+          if (baseUsdPrice) {
+            // Get target crypto prices in USD
+            const targetResponse = await axios.get(`${COINGECKO_API}/simple/price`, {
+              params: {
+                ids: cryptoTargets.join(','),
+                vs_currencies: 'usd',
+              },
+              timeout: 10000,
+            });
+
+            // Calculate crypto-to-crypto rate via USD
+            cryptoTargets.forEach(targetCrypto => {
+              const targetUsdPrice = targetResponse.data[targetCrypto]?.usd;
+              if (targetUsdPrice) {
+                // How much target crypto for 1 base crypto
+                rates[targetCrypto] = baseUsdPrice / targetUsdPrice;
+              }
+            });
+          }
+        }
       } else {
         // For fiat base, we need to get 1/rate for each target
         // Get all crypto targets priced in the base fiat
@@ -137,7 +187,10 @@ export function useCurrencyAPI() {
           Object.keys(cryptoResponse.data).forEach(coinId => {
             const price = cryptoResponse.data[coinId][baseCurrency];
             if (price) {
-              rates[coinId] = price;
+              // Price is "how much fiat for 1 crypto"
+              // But we need "how much crypto for 1 fiat"
+              // So we invert: 1 / price
+              rates[coinId] = 1 / price;
             }
           });
         }
