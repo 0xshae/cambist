@@ -2,16 +2,10 @@
   <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
     <!-- Header -->
     <header class="bg-white/80 backdrop-blur-sm border-b border-gray-200/60 sticky top-0 z-40">
-      <div class="max-w-[1600px] mx-auto px-8 py-5">
+      <div class="max-w-[1600px] mx-auto px-8 py-3">
         <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-3">
-            <div class="w-11 h-11 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
-              <DollarSign :size="24" class="text-white" />
-            </div>
-            <div>
-              <h1 class="text-2xl font-bold text-gray-900">Currency Converter</h1>
-              <p class="text-xs text-gray-500">Real-time exchange rates</p>
-            </div>
+          <div class="flex items-center">
+            <img src="/cambist_no_bg_rec.png" alt="Cambio" class="h-10 w-auto" />
           </div>
           <div class="flex items-center space-x-6">
             <div v-if="lastUpdated" class="hidden sm:flex items-center space-x-2 text-sm text-gray-500">
@@ -55,6 +49,16 @@
             <p class="text-amber-600 text-xs mt-2">You can still use the app with available currencies.</p>
           </div>
         </div>
+      </div>
+
+      <!-- Hero text -->
+      <div v-if="!initialLoading" class="text-center mb-12">
+        <h2 class="text-4xl md:text-5xl text-gray-900 mb-3">
+          Multi-Currency Converter
+        </h2>
+        <p class="text-lg md:text-xl text-gray-600 font-medium">
+          Compare against multiple assets at once.
+        </p>
       </div>
 
       <!-- Converter interface -->
@@ -106,7 +110,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { DollarSign, RefreshCw, AlertCircle } from 'lucide-vue-next';
+import { RefreshCw, AlertCircle } from 'lucide-vue-next';
 import SourceCurrencyInput from './components/SourceCurrencyInput.vue';
 import TargetCurrencyList from './components/TargetCurrencyList.vue';
 import CurrencySelector from './components/CurrencySelector.vue';
