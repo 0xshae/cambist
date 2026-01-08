@@ -61,11 +61,6 @@
       <div v-if="!initialLoading" class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
         <!-- Left: Source currency -->
         <div class="space-y-6">
-          <div class="flex items-center justify-between mb-2">
-            <h2 class="text-sm font-bold text-gray-900 uppercase tracking-wider">From</h2>
-            <span class="text-xs text-gray-500 font-medium">Source Currency</span>
-          </div>
-          
           <SourceCurrencyInput
             :model-value="sourceAmount"
             :selected-currency="sourceCurrency"
@@ -81,16 +76,6 @@
 
         <!-- Right: Target currencies -->
         <div>
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="text-sm font-bold text-gray-900 uppercase tracking-wider">To</h2>
-            <div class="flex items-center space-x-3">
-              <span class="text-xs text-gray-500 font-medium">Target Currencies</span>
-              <span class="px-2.5 py-1 bg-gray-900 text-white text-xs font-bold rounded-lg">
-                {{ targetCurrencies.length }}/10
-              </span>
-            </div>
-          </div>
-          
           <TargetCurrencyList
             :target-currencies="targetCurrencies"
             :conversions="conversions"

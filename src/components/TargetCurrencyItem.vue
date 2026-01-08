@@ -1,50 +1,47 @@
 <template>
   <div class="bg-white rounded-3xl shadow-xl shadow-gray-900/5 border border-gray-200/60 overflow-hidden hover:shadow-2xl hover:shadow-gray-900/10 transition-all duration-300 group">
     <div class="p-6">
-      <!-- Currency and Amount on same line -->
       <div class="flex items-center justify-between gap-6">
-        <!-- Currency info -->
-        <div class="flex items-center gap-4 flex-shrink-0">
-          <div class="relative">
-            <div class="w-12 h-12 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
-              <span class="text-2xl">{{ getCurrencyIcon(target.currency) }}</span>
-            </div>
-            <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-md">
-              <span class="text-white text-xs font-bold">→</span>
-            </div>
+        <!-- Amount display -->
+        <div class="flex-1 min-w-0">
+          <div v-if="isLoading" class="animate-pulse">
+            <div class="h-9 w-40 bg-gray-200 rounded-lg"></div>
           </div>
-          <div>
-            <div class="font-bold text-gray-900 text-lg leading-tight">{{ target.currency.symbol.toUpperCase() }}</div>
-            <div class="text-xs text-gray-500 leading-tight">{{ target.currency.name }}</div>
+          <div v-else-if="conversion" class="text-4xl font-bold text-gray-900">
+            {{ formatAmount(conversion.amount) }}
           </div>
+          <div v-else class="text-4xl font-bold text-gray-400">-</div>
         </div>
 
-        <!-- Amount display -->
-        <div class="flex items-center gap-3 flex-1 justify-end">
-          <div class="text-right">
-            <div v-if="isLoading" class="animate-pulse">
-              <div class="h-8 w-32 bg-gray-200 rounded-lg"></div>
+        <!-- Currency info and actions -->
+        <div class="flex items-center gap-4">
+          <div class="flex items-center space-x-3 p-4 bg-gradient-to-br from-gray-50 to-gray-100/50 rounded-2xl border border-gray-200/60 min-w-[200px]">
+            <div class="relative">
+              <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                <span class="text-2xl">{{ getCurrencyIcon(target.currency) }}</span>
+              </div>
+              <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-md flex items-center justify-center shadow-md">
+                <span class="text-white text-xs font-bold">→</span>
+              </div>
             </div>
-            <div v-else-if="conversion" class="text-3xl font-bold text-gray-900">
-              {{ formatAmount(conversion.amount) }}
-            </div>
-            <div v-else class="text-3xl font-bold text-gray-400">
-              -
+            <div>
+              <div class="font-bold text-gray-900 text-lg">{{ target.currency.symbol.toUpperCase() }}</div>
+              <div class="text-xs text-gray-600">{{ target.currency.name }}</div>
             </div>
           </div>
 
           <!-- Action buttons -->
-          <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200 ml-2">
+          <div class="flex flex-col space-y-1 opacity-0 group-hover:opacity-100 transition-all duration-200">
             <button
               @click="emit('swap')"
-              class="p-2.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
+              class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
               title="Swap with source"
             >
               <ArrowLeftRight :size="16" />
             </button>
             <button
               @click="emit('remove')"
-              class="p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+              class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
               title="Remove"
             >
               <X :size="16" />
