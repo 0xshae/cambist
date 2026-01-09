@@ -14,9 +14,9 @@
     </TransitionGroup>
 
     <!-- Empty state -->
-    <div v-if="targetCurrencies.length === 0" class="text-center py-20 bg-white/60 backdrop-blur-sm border-2 border-dashed border-gray-300 rounded-3xl hover:border-blue-400 hover:bg-blue-50/50 transition-all duration-300">
-      <div class="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-sm">
-        <TrendingUp :size="32" class="text-gray-400" />
+    <div v-if="targetCurrencies.length === 0" class="text-center py-20 bg-white/60 backdrop-blur-sm border-2 border-dashed border-gray-300 rounded-2xl hover:border-[#008cff] hover:bg-[#cae2f2]/10 transition-all duration-300">
+      <div class="w-20 h-20 bg-gradient-to-br from-[#008cff] to-[#008cff]/80 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-[#008cff]/30">
+        <TrendingUp :size="32" class="text-white" />
       </div>
       <p class="text-gray-900 font-semibold text-lg mb-2">No target currencies yet</p>
       <p class="text-sm text-gray-500 mb-6 max-w-xs mx-auto">Add currencies below to see real-time conversions</p>
@@ -26,13 +26,13 @@
     <button
       @click="emit('add')"
       :disabled="!canAddMore"
-      class="w-full flex items-center justify-center space-x-3 px-6 py-5 bg-white border-2 border-dashed border-gray-300 rounded-3xl hover:border-blue-500 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-gray-300 disabled:hover:bg-white group shadow-sm hover:shadow-lg"
+      class="w-full flex items-center justify-center space-x-3 px-6 py-5 bg-white/90 backdrop-blur-sm border-2 border-dashed border-gray-300 rounded-2xl hover:border-[#008cff] hover:bg-gradient-to-br hover:from-[#cae2f2]/20 hover:to-[#008cff]/10 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-gray-300 disabled:hover:bg-white group shadow-sm hover:shadow-lg hover:shadow-[#008cff]/20"
     >
-      <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-md shadow-blue-500/30">
+      <div class="w-10 h-10 bg-gradient-to-br from-[#008cff] to-[#008cff]/80 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-[#008cff]/30">
         <Plus :size="20" class="text-white" />
       </div>
       <div class="text-left">
-        <div class="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+        <div class="font-bold text-gray-900 transition-colors">
           {{ targetCurrencies.length === 0 ? 'Add your first currency' : 'Add another currency' }}
         </div>
         <div class="text-xs text-gray-500">
