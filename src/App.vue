@@ -40,15 +40,14 @@
       </div>
 
       <!-- Error state / Warning -->
-      <div v-else-if="error" class="bg-amber-50 border border-amber-200 rounded-2xl p-6 max-w-2xl mx-auto mb-8">
+      <div v-else-if="error" class="bg-amber-50/80 backdrop-blur-sm border border-amber-200/60 rounded-2xl p-5 max-w-2xl mx-auto mb-8">
         <div class="flex items-start space-x-3">
-          <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
-            <AlertCircle :size="20" class="text-amber-600" />
+          <div class="w-9 h-9 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <AlertCircle :size="18" class="text-amber-600" />
           </div>
           <div>
-            <h3 class="font-semibold text-amber-900 mb-1">Limited functionality</h3>
-            <p class="text-amber-700 text-sm">{{ error }}</p>
-            <p class="text-amber-600 text-xs mt-2">You can still use the app with available currencies.</p>
+            <h3 class="font-semibold text-amber-900 mb-1 text-sm">Notice</h3>
+            <p class="text-amber-700 text-xs">{{ error }}</p>
           </div>
         </div>
       </div>
@@ -188,12 +187,14 @@ const formatTime = (date: Date) => {
   return date.toLocaleTimeString();
 };
 
-// Auto-refresh setup
+// Auto-refresh setup - disabled to prevent disruption during calculations
+// Users can manually refresh using the refresh button if needed
 const setupAutoRefresh = () => {
-  // Refresh rates every 60 seconds
-  autoRefreshInterval.value = window.setInterval(() => {
-    refreshRates();
-  }, 60000);
+  // Auto-refresh disabled - use manual refresh button instead
+  // Uncomment below to enable auto-refresh every 5 minutes:
+  // autoRefreshInterval.value = window.setInterval(() => {
+  //   refreshRates();
+  // }, 300000);
 };
 
 const cleanupAutoRefresh = () => {
