@@ -7,7 +7,7 @@
       <div class="max-w-[1600px] mx-auto px-8 py-3">
         <div class="flex items-center justify-between">
           <div class="flex items-center">
-            <img src="/cambio_no_bg_blue.png" alt="Cambio" class="h-10 w-auto" />
+            <img src="/cambio_final.png" alt="Cambio" class="h-10 w-auto" />
           </div>
           <div class="flex items-center space-x-6">
             <div v-if="lastUpdated" class="hidden sm:flex items-center space-x-2 text-sm text-gray-500">
@@ -66,8 +66,8 @@
       <!-- Converter interface -->
       <div v-if="!initialLoading" class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
         <!-- Left: Source currency -->
-        <div class="space-y-6">
-          <div class="mb-3">
+        <div>
+          <div class="mb-4">
             <h2 class="text-sm font-bold text-gray-900 uppercase tracking-wider">From</h2>
           </div>
           
@@ -86,11 +86,10 @@
 
         <!-- Right: Target currencies -->
         <div>
-          <div class="mb-3">
+          <div class="mb-4">
             <h2 class="text-sm font-bold text-gray-900 uppercase tracking-wider">To</h2>
           </div>
           
-
           <TargetCurrencyList
             :target-currencies="targetCurrencies"
             :conversions="conversions"
