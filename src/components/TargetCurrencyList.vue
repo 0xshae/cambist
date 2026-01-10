@@ -18,8 +18,8 @@
       <div class="w-20 h-20 bg-gradient-to-br from-[#008cff] to-[#008cff]/80 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-[#008cff]/30">
         <TrendingUp :size="32" class="text-white" />
       </div>
-      <p class="text-gray-900 font-semibold text-lg mb-2">No target currencies yet</p>
-      <p class="text-sm text-gray-500 mb-6 max-w-xs mx-auto">Add currencies below to see real-time conversions</p>
+      <p class="text-gray-900 font-semibold text-lg mb-2">No currencies selected</p>
+      <p class="text-sm text-gray-500 mb-6 max-w-xs mx-auto">Add currencies below to compare exchange rates in real-time</p>
     </div>
 
     <!-- Add button -->
@@ -33,7 +33,7 @@
       </div>
       <div class="text-left">
         <div class="font-bold text-gray-900 transition-colors">
-          {{ targetCurrencies.length === 0 ? 'Add your first currency' : 'Add another currency' }}
+          {{ targetCurrencies.length === 0 ? 'Add a currency to compare' : 'Add another currency' }}
         </div>
         <div class="text-xs text-gray-500">
           {{ canAddMore ? `${10 - targetCurrencies.length} slots remaining` : 'Maximum reached' }}

@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white/90 backdrop-blur-md rounded-2xl shadow-lg shadow-gray-900/5 border border-gray-200/60 overflow-hidden hover:shadow-xl hover:shadow-[#008cff]/10 hover:border-[#008cff]/30 transition-all duration-300 relative">
+  <div class="bg-white/90 backdrop-blur-md rounded-2xl shadow-lg shadow-gray-900/5 border border-gray-200/60 hover:shadow-xl hover:shadow-[#008cff]/10 hover:border-[#008cff]/30 transition-all duration-300 relative">
     <div class="p-6">
       <!-- Amount and Currency selector - horizontal layout -->
       <div class="flex items-center gap-6">
@@ -11,8 +11,9 @@
             type="number"
             step="any"
             min="0"
-            placeholder="0.00"
-            class="w-full text-3xl font-semibold text-gray-900 bg-transparent border-none focus:outline-none focus:ring-0 p-0 placeholder-gray-300"
+            placeholder="Enter amount..."
+            :disabled="!selectedCurrency"
+            class="w-full text-3xl font-semibold text-gray-900 bg-transparent border-none focus:outline-none focus:ring-0 p-0 placeholder-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
 
@@ -33,11 +34,11 @@
             </div>
             <div v-else class="flex items-center space-x-2.5">
               <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
-                <span class="text-lg">💰</span>
+                <span class="text-lg">💱</span>
               </div>
               <div class="text-left">
-                <div class="font-semibold text-gray-500 text-sm">Select</div>
-                <div class="text-xs text-gray-400">Currency</div>
+                <div class="font-semibold text-gray-500 text-sm">Select currency</div>
+                <div class="text-xs text-gray-400">Choose to start</div>
               </div>
             </div>
             <div class="flex items-center justify-center w-7 h-7 bg-white/80 rounded-lg group-hover:bg-gradient-to-br group-hover:from-[#008cff] group-hover:to-[#008cff]/80 transition-all ml-2">
@@ -47,9 +48,10 @@
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Currency selector modal -->
-    <CurrencySelector
+  <!-- Currency selector modal - outside of the card to avoid clipping -->
+  <CurrencySelector
       :is-open="showSelector"
       :currencies="currencies"
       :popular-currencies="popularCurrencies"
@@ -59,7 +61,6 @@
       @close="showSelector = false"
       @select="handleSelectCurrency"
     />
-  </div>
 </template>
 
 <script setup lang="ts">

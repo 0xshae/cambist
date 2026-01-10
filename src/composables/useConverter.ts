@@ -20,9 +20,9 @@ export function useConverter() {
   } = useCurrencyAPI();
 
   // Persistent state
-  const sourceCurrencyId = useLocalStorage<string>('source_currency', 'usd');
-  const sourceAmount = useLocalStorage<number>('source_amount', 100);
-  const targetCurrencyIds = useLocalStorage<string[]>('target_currencies', ['eur', 'gbp', 'bitcoin']);
+  const sourceCurrencyId = useLocalStorage<string>('source_currency', '');
+  const sourceAmount = useLocalStorage<number>('source_amount', 0);
+  const targetCurrencyIds = useLocalStorage<string[]>('target_currencies', []);
 
   // Local state
   const targetCurrencies = ref<TargetCurrency[]>([]);
