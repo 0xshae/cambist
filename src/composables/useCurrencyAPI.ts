@@ -5,7 +5,7 @@ import type { Currency, ExchangeRate } from '../types/currency';
 const COINGECKO_API = 'https://api.coingecko.com/api/v3';
 
 // Popular currencies to show at the top
-const POPULAR_CURRENCIES = ['usd', 'eur', 'gbp', 'btc', 'eth', 'usdt', 'bnb'];
+const POPULAR_CURRENCIES = ['usd', 'eur', 'gbp', 'jpy', 'cad', 'aud', 'bitcoin', 'ethereum', 'tether'];
 
 export function useCurrencyAPI() {
   const currencies = ref<Currency[]>([]);
@@ -20,23 +20,12 @@ export function useCurrencyAPI() {
     error.value = null;
 
     try {
-      // Fetch supported fiat currencies with timeout
-      const fiatResponse = await axios.get(`${COINGECKO_API}/simple/supported_vs_currencies`, {
-        timeout: 10000,
-      });
-      const fiatCurrencies: Currency[] = fiatResponse.data.map((code: string) => ({
-        id: code,
-        symbol: code,
-        name: code.toUpperCase(),
-        type: 'fiat' as const,
-      }));
-
-      // Fetch top cryptocurrencies with timeout
+      // Fetch top cryptocurrencies first
       const cryptoResponse = await axios.get(`${COINGECKO_API}/coins/markets`, {
         params: {
           vs_currency: 'usd',
           order: 'market_cap_desc',
-          per_page: 50,
+          per_page: 100,
           page: 1,
           sparkline: false,
         },
@@ -50,12 +39,32 @@ export function useCurrencyAPI() {
         type: 'crypto' as const,
       }));
 
+      // Create a set of crypto IDs for quick lookup
+      const cryptoIds = new Set(cryptoCurrencies.map(c => c.id));
+      const cryptoSymbols = new Set(cryptoCurrencies.map(c => c.symbol));
+
+      // Fetch supported vs currencies (this includes both fiat and some crypto)
+      const vsResponse = await axios.get(`${COINGECKO_API}/simple/supported_vs_currencies`, {
+        timeout: 10000,
+      });
+      
+      // Filter out crypto from the vs_currencies list to get only fiat
+      const fiatCurrencies: Currency[] = vsResponse.data
+        .filter((code: string) => !cryptoIds.has(code) && !cryptoSymbols.has(code))
+        .map((code: string) => ({
+          id: code,
+          symbol: code,
+          name: code.toUpperCase(),
+          type: 'fiat' as const,
+        }));
+
       currencies.value = [...fiatCurrencies, ...cryptoCurrencies];
     } catch (err: any) {
       console.error('Error fetching currencies:', err);
       
       // Use fallback currencies if API fails
       const fallbackCurrencies: Currency[] = [
+        // Major Fiat Currencies
         { id: 'usd', symbol: 'usd', name: 'US Dollar', type: 'fiat' },
         { id: 'eur', symbol: 'eur', name: 'Euro', type: 'fiat' },
         { id: 'gbp', symbol: 'gbp', name: 'British Pound', type: 'fiat' },
@@ -65,12 +74,39 @@ export function useCurrencyAPI() {
         { id: 'chf', symbol: 'chf', name: 'Swiss Franc', type: 'fiat' },
         { id: 'cny', symbol: 'cny', name: 'Chinese Yuan', type: 'fiat' },
         { id: 'inr', symbol: 'inr', name: 'Indian Rupee', type: 'fiat' },
+        { id: 'krw', symbol: 'krw', name: 'South Korean Won', type: 'fiat' },
+        { id: 'brl', symbol: 'brl', name: 'Brazilian Real', type: 'fiat' },
+        { id: 'mxn', symbol: 'mxn', name: 'Mexican Peso', type: 'fiat' },
+        { id: 'rub', symbol: 'rub', name: 'Russian Ruble', type: 'fiat' },
+        { id: 'zar', symbol: 'zar', name: 'South African Rand', type: 'fiat' },
+        { id: 'sgd', symbol: 'sgd', name: 'Singapore Dollar', type: 'fiat' },
+        { id: 'hkd', symbol: 'hkd', name: 'Hong Kong Dollar', type: 'fiat' },
+        { id: 'nzd', symbol: 'nzd', name: 'New Zealand Dollar', type: 'fiat' },
+        { id: 'sek', symbol: 'sek', name: 'Swedish Krona', type: 'fiat' },
+        { id: 'nok', symbol: 'nok', name: 'Norwegian Krone', type: 'fiat' },
+        { id: 'dkk', symbol: 'dkk', name: 'Danish Krone', type: 'fiat' },
+        { id: 'pln', symbol: 'pln', name: 'Polish Zloty', type: 'fiat' },
+        { id: 'thb', symbol: 'thb', name: 'Thai Baht', type: 'fiat' },
+        { id: 'try', symbol: 'try', name: 'Turkish Lira', type: 'fiat' },
+        { id: 'idr', symbol: 'idr', name: 'Indonesian Rupiah', type: 'fiat' },
+        { id: 'aed', symbol: 'aed', name: 'UAE Dirham', type: 'fiat' },
+        { id: 'sar', symbol: 'sar', name: 'Saudi Riyal', type: 'fiat' },
+        // Top Cryptocurrencies
         { id: 'bitcoin', symbol: 'btc', name: 'Bitcoin', type: 'crypto' },
         { id: 'ethereum', symbol: 'eth', name: 'Ethereum', type: 'crypto' },
         { id: 'tether', symbol: 'usdt', name: 'Tether', type: 'crypto' },
         { id: 'binancecoin', symbol: 'bnb', name: 'BNB', type: 'crypto' },
         { id: 'solana', symbol: 'sol', name: 'Solana', type: 'crypto' },
         { id: 'ripple', symbol: 'xrp', name: 'XRP', type: 'crypto' },
+        { id: 'usd-coin', symbol: 'usdc', name: 'USD Coin', type: 'crypto' },
+        { id: 'cardano', symbol: 'ada', name: 'Cardano', type: 'crypto' },
+        { id: 'dogecoin', symbol: 'doge', name: 'Dogecoin', type: 'crypto' },
+        { id: 'tron', symbol: 'trx', name: 'TRON', type: 'crypto' },
+        { id: 'polkadot', symbol: 'dot', name: 'Polkadot', type: 'crypto' },
+        { id: 'polygon', symbol: 'matic', name: 'Polygon', type: 'crypto' },
+        { id: 'litecoin', symbol: 'ltc', name: 'Litecoin', type: 'crypto' },
+        { id: 'chainlink', symbol: 'link', name: 'Chainlink', type: 'crypto' },
+        { id: 'avalanche-2', symbol: 'avax', name: 'Avalanche', type: 'crypto' },
       ];
       
       currencies.value = fallbackCurrencies;

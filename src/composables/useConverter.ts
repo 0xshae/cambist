@@ -115,11 +115,18 @@ export function useConverter() {
       return;
     }
 
+    // Find the converted amount for this target
+    const conversion = conversions.value.find(c => c.currency.id === target.currency.id);
+    const convertedAmount = conversion?.amount || sourceAmount.value;
+
     const oldSource = sourceCurrency.value;
     const newSource = target.currency;
 
-    // Set new source
+    // Set new source currency
     sourceCurrencyId.value = newSource.id;
+    
+    // Update the source amount to the converted amount
+    sourceAmount.value = convertedAmount;
 
     // Replace the target with the old source
     target.currency = oldSource;

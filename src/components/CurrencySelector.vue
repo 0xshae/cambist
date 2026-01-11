@@ -28,12 +28,12 @@
 
       <!-- Currency list -->
       <div class="overflow-y-auto flex-1 px-8 py-6">
-        <!-- Popular currencies -->
-        <div v-if="filteredPopular.length > 0 && !searchQuery" class="mb-6">
+        <!-- All currencies under Popular -->
+        <div v-if="filteredCurrencies.length > 0" class="mb-6">
           <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Popular</h3>
           <div class="space-y-1">
             <button
-              v-for="currency in filteredPopular"
+              v-for="currency in filteredCurrencies"
               :key="currency.id"
               @click="selectCurrency(currency)"
               :disabled="isDisabled(currency)"
@@ -51,54 +51,6 @@
               <span class="text-xs px-2.5 py-1 rounded-full font-medium" :class="currency.type === 'crypto' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'">
                 {{ currency.type }}
               </span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Crypto currencies -->
-        <div v-if="filteredCrypto.length > 0" class="mb-6">
-          <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Crypto</h3>
-          <div class="space-y-1">
-            <button
-              v-for="currency in filteredCrypto"
-              :key="currency.id"
-              @click="selectCurrency(currency)"
-              :disabled="isDisabled(currency)"
-              class="w-full flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-left group"
-            >
-              <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center group-hover:bg-white">
-                  <span class="text-xl">{{ getCurrencyIcon(currency) }}</span>
-                </div>
-                <div>
-                  <div class="font-semibold text-gray-900">{{ currency.symbol.toUpperCase() }}</div>
-                  <div class="text-sm text-gray-500">{{ currency.name }}</div>
-                </div>
-              </div>
-            </button>
-          </div>
-        </div>
-
-        <!-- Fiat currencies -->
-        <div v-if="filteredFiat.length > 0" class="mb-6">
-          <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Fiat</h3>
-          <div class="space-y-1">
-            <button
-              v-for="currency in filteredFiat"
-              :key="currency.id"
-              @click="selectCurrency(currency)"
-              :disabled="isDisabled(currency)"
-              class="w-full flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-left group"
-            >
-              <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center group-hover:bg-white">
-                  <span class="text-xl">{{ getCurrencyIcon(currency) }}</span>
-                </div>
-                <div>
-                  <div class="font-semibold text-gray-900">{{ currency.symbol.toUpperCase() }}</div>
-                  <div class="text-sm text-gray-500">{{ currency.name }}</div>
-                </div>
-              </div>
             </button>
           </div>
         </div>
@@ -143,7 +95,7 @@ const searchQuery = ref('');
 
 const filterCurrencies = (currencies: Currency[]) => {
   if (!searchQuery.value) {
-    return currencies.slice(0, 20); // Limit to first 20 if no search
+    return currencies.slice(0, 50); // Show first 50 by default
   }
 
   const query = searchQuery.value.toLowerCase();
@@ -154,15 +106,10 @@ const filterCurrencies = (currencies: Currency[]) => {
   ).slice(0, 50); // Limit to 50 results
 };
 
-const filteredPopular = computed(() => filterCurrencies(props.popularCurrencies));
-const filteredCrypto = computed(() => filterCurrencies(props.cryptoCurrencies));
-const filteredFiat = computed(() => filterCurrencies(props.fiatCurrencies));
+const filteredCurrencies = computed(() => filterCurrencies(props.currencies));
 
 const noResults = computed(() => {
-  return searchQuery.value && 
-         filteredPopular.value.length === 0 && 
-         filteredCrypto.value.length === 0 && 
-         filteredFiat.value.length === 0;
+  return searchQuery.value && filteredCurrencies.value.length === 0;
 });
 
 const isDisabled = (currency: Currency) => {
@@ -170,19 +117,7 @@ const isDisabled = (currency: Currency) => {
 };
 
 const getCurrencyIcon = (currency: Currency) => {
-  // Simple icon mapping - you could expand this
-  const icons: Record<string, string> = {
-    usd: '💵',
-    eur: '💶',
-    gbp: '💷',
-    jpy: '💴',
-    btc: '₿',
-    eth: 'Ξ',
-    bitcoin: '₿',
-    ethereum: 'Ξ',
-  };
-
-  return icons[currency.id] || icons[currency.symbol] || (currency.type === 'crypto' ? '🪙' : '💰');
+  return currency.type === 'crypto' ? '🪙' : '💵';
 };
 
 const selectCurrency = (currency: Currency) => {
