@@ -4,8 +4,12 @@ import type { Currency, ExchangeRate } from '../types/currency';
 
 const COINGECKO_API = 'https://api.coingecko.com/api/v3';
 
-// Popular currencies to show at the top
-const POPULAR_CURRENCIES = ['usd', 'eur', 'gbp', 'jpy', 'cad', 'aud', 'bitcoin', 'ethereum', 'tether'];
+// Popular currencies to show by default - naturally jumbled mix of fiat and crypto
+const POPULAR_CURRENCIES = [
+  'usd', 'eur', 'bitcoin', 'gbp', 'ethereum', 'jpy', 'tether', 'cad', 
+  'binancecoin', 'aud', 'solana', 'chf', 'ripple', 'cny', 'usd-coin', 
+  'inr', 'cardano', 'krw', 'dogecoin', 'tron'
+];
 
 export function useCurrencyAPI() {
   const currencies = ref<Currency[]>([]);
@@ -218,9 +222,11 @@ export function useCurrencyAPI() {
     }
   };
 
-  // Get popular currencies
+  // Get popular currencies in the order defined in POPULAR_CURRENCIES
   const popularCurrencies = computed(() => {
-    return currencies.value.filter(c => POPULAR_CURRENCIES.includes(c.id) || POPULAR_CURRENCIES.includes(c.symbol));
+    return POPULAR_CURRENCIES
+      .map(id => currencies.value.find(c => c.id === id || c.symbol === id))
+      .filter((c): c is Currency => c !== undefined);
   });
 
   // Get crypto currencies

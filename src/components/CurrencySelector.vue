@@ -95,9 +95,11 @@ const searchQuery = ref('');
 
 const filterCurrencies = (currencies: Currency[]) => {
   if (!searchQuery.value) {
-    return currencies.slice(0, 50); // Show first 50 by default
+    // Show only popular currencies by default
+    return props.popularCurrencies;
   }
 
+  // When searching, search through all currencies
   const query = searchQuery.value.toLowerCase();
   return currencies.filter(c => 
     c.id.toLowerCase().includes(query) ||
