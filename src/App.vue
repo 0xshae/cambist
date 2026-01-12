@@ -14,6 +14,34 @@
               <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
               <span>Updated {{ formatTime(lastUpdated) }}</span>
             </div>
+            
+            <!-- How it works tooltip -->
+            <div class="relative group">
+              <button
+                class="flex items-center space-x-2 px-5 py-2.5 text-sm font-medium text-gray-700 hover:text-[#008cff] bg-white border border-gray-200 rounded-xl hover:border-[#008cff] hover:shadow-md hover:shadow-[#008cff]/20 transition-all"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                <span>How</span>
+              </button>
+              
+              <!-- Tooltip -->
+              <div class="absolute right-0 top-full mt-2 w-80 bg-white border border-gray-200 rounded-2xl shadow-2xl shadow-gray-900/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 p-6">
+                <h3 class="font-semibold text-gray-900 mb-3 text-base">How It Works</h3>
+                <div class="space-y-3 text-sm text-gray-600 leading-relaxed">
+                  <p>1. <strong>Select a source currency</strong> and enter the amount you want to convert.</p>
+                  <p>2. <strong>Add target currencies</strong> to see real-time conversions across multiple assets.</p>
+                  <p>3. <strong>Swap currencies</strong> instantly by clicking the swap icon on any target currency.</p>
+                  <p class="pt-2 border-t border-gray-200 text-xs text-gray-500">
+                    Exchange rates are fetched from CoinGecko API and update only when you manually refresh or change currencies.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
             <button
               @click="handleRefresh"
               :disabled="isLoading"
