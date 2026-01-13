@@ -164,7 +164,7 @@ export function useCurrencyAPI() {
           return curr?.type === 'fiat';
         });
 
-        // Get crypto prices in base fiat
+        // Get crypto prices in base fiat and invert the rate
         if (cryptoTargets.length > 0) {
           const cryptoResponse = await axios.get(`${COINGECKO_API}/simple/price`, {
             params: {
@@ -177,7 +177,8 @@ export function useCurrencyAPI() {
           Object.keys(cryptoResponse.data).forEach(coinId => {
             const price = cryptoResponse.data[coinId][baseCurrency];
             if (price) {
-              rates[coinId] = price;
+              // Invert the rate: if 1 BTC = 90773 USD, then 1 USD = 1/90773 BTC
+              rates[coinId] = 1 / price;
             }
           });
         }

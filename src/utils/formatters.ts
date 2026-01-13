@@ -3,12 +3,12 @@ export function formatCurrency(amount: number, currencyCode: string): string {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: currencyCode.toUpperCase(),
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 8,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 4,
     }).format(amount);
   } catch {
     // Fallback for unsupported currencies (e.g., crypto)
-    return `${amount.toFixed(8)} ${currencyCode.toUpperCase()}`;
+    return `${amount.toFixed(4)} ${currencyCode.toUpperCase()}`;
   }
 }
 

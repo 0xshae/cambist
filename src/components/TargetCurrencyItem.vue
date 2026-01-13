@@ -75,22 +75,9 @@ const getCurrencyIcon = (currency: Currency) => {
 };
 
 const formatAmount = (amount: number) => {
-  if (amount >= 1000000) {
-    return new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amount);
-  } else if (amount >= 1) {
-    return new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 4,
-    }).format(amount);
-  } else if (amount > 0) {
-    return new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 6,
-      maximumFractionDigits: 8,
-    }).format(amount);
-  }
-  return '0.00';
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 4,
+  }).format(amount);
 };
 </script>
