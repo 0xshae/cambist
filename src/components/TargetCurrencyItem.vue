@@ -75,9 +75,12 @@ const getCurrencyIcon = (currency: Currency) => {
 };
 
 const formatAmount = (amount: number) => {
+  // Round to 2 decimal places first
+  const rounded = Math.round(amount * 100) / 100;
+  
   return new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 4,
-  }).format(amount);
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(rounded);
 };
 </script>

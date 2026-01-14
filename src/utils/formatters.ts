@@ -1,14 +1,17 @@
 export function formatCurrency(amount: number, currencyCode: string): string {
+  // Round to 2 decimal places first
+  const rounded = Math.round(amount * 100) / 100;
+  
   try {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: currencyCode.toUpperCase(),
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 4,
-    }).format(amount);
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(rounded);
   } catch {
     // Fallback for unsupported currencies (e.g., crypto)
-    return `${amount.toFixed(4)} ${currencyCode.toUpperCase()}`;
+    return `${rounded.toFixed(2)} ${currencyCode.toUpperCase()}`;
   }
 }
 

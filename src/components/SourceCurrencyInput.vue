@@ -6,10 +6,10 @@
         <!-- Amount input -->
         <div class="flex-1 min-w-0">
           <input
-            :value="modelValue"
+            :value="displayValue"
             @input="handleInput"
             type="number"
-            step="any"
+            step="0.01"
             min="0"
             placeholder="Enter amount..."
             :disabled="!selectedCurrency"
@@ -64,7 +64,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { ChevronDown } from 'lucide-vue-next';
 import CurrencySelector from './CurrencySelector.vue';
 import type { Currency } from '../types/currency';
@@ -90,9 +90,16 @@ const emit = defineEmits<{
 
 const showSelector = ref(false);
 
+// Computed value that always shows rounded to 2 decimals
+const displayValue = computed(() => {
+  return Math.round(props.modelValue * 100) / 100;
+});
+
 const handleInput = (event: Event) => {
   const target = event.target as HTMLInputElement;
-  const value = parseFloat(target.value) || 0;
+  let value = parseFloat(target.value) || 0;
+  // Round to 2 decimal places
+  value = Math.round(value * 100) / 100;
   emit('update:modelValue', value);
 };
 
