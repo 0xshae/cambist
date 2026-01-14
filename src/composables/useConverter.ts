@@ -5,6 +5,9 @@ import { useCurrencyAPI } from './useCurrencyAPI';
 
 const MAX_TARGETS = 10;
 
+// Flag to prevent watcher from triggering during swap
+let isSwapping = false;
+
 export function useConverter() {
   const {
     currencies,
@@ -76,7 +79,7 @@ export function useConverter() {
   }, { deep: true });
 
   // Add a target currency
-  const addTarget = (currency: Currency) => {
+  const addTarget = async (currency: Currency) => {
     if (!canAddMoreTargets.value) {
       return false;
     }
@@ -97,6 +100,9 @@ export function useConverter() {
       currency,
     });
 
+    // Fetch exchange rates for the new target
+    await refreshRates();
+
     return true;
   };
 
@@ -109,27 +115,35 @@ export function useConverter() {
   };
 
   // Swap source with a target currency
-  const swapCurrency = (targetId: string) => {
+  const swapCurrency = async (targetId: string) => {
     const target = targetCurrencies.value.find(t => t.id === targetId);
     if (!target || !sourceCurrency.value) {
       return;
     }
 
+    // Prevent watcher from triggering during swap
+    isSwapping = true;
+
     // Find the converted amount for this target
     const conversion = conversions.value.find(c => c.currency.id === target.currency.id);
     const convertedAmount = conversion?.amount || sourceAmount.value;
+    
+    // Round to 2 decimal places to avoid precision errors
+    const roundedAmount = Math.round(convertedAmount * 100) / 100;
 
     const oldSource = sourceCurrency.value;
     const newSource = target.currency;
 
-    // Set new source currency
-    sourceCurrencyId.value = newSource.id;
-    
-    // Update the source amount to the converted amount
-    sourceAmount.value = convertedAmount;
-
-    // Replace the target with the old source
+    // Update all values
     target.currency = oldSource;
+    sourceCurrencyId.value = newSource.id;
+    sourceAmount.value = roundedAmount;
+
+    // Re-enable watcher
+    isSwapping = false;
+
+    // Explicitly refresh rates with new source
+    await refreshRates();
   };
 
   // Update source amount
@@ -158,6 +172,8 @@ export function useConverter() {
 
   // Watch for changes in source or targets and fetch rates
   watch([sourceCurrencyId, targetCurrencies], async () => {
+    // Skip if we're in the middle of a swap operation
+    if (isSwapping) return;
     await refreshRates();
   }, { deep: true });
 

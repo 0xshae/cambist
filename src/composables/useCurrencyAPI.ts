@@ -140,30 +140,61 @@ export function useCurrencyAPI() {
 
       let rates: ExchangeRate = {};
 
+      // Separate targets into crypto and fiat
+      const cryptoTargets = targetCurrencies.filter(tc => {
+        const curr = currencies.value.find(c => c.id === tc || c.symbol === tc);
+        return curr?.type === 'crypto';
+      });
+
+      const fiatTargets = targetCurrencies.filter(tc => {
+        const curr = currencies.value.find(c => c.id === tc || c.symbol === tc);
+        return curr?.type === 'fiat';
+      });
+
       if (baseCurrencyObj.type === 'crypto') {
-        // For crypto base, use the coin price endpoint
-        const response = await axios.get(`${COINGECKO_API}/simple/price`, {
+        // BASE IS CRYPTO
+        
+        // Get base crypto price in USD for reference
+        const baseResponse = await axios.get(`${COINGECKO_API}/simple/price`, {
           params: {
             ids: baseCurrency,
-            vs_currencies: targetCurrencies.join(','),
+            vs_currencies: ['usd', ...fiatTargets].join(','),
           },
           timeout: 10000,
         });
+        
+        const basePrices = baseResponse.data[baseCurrency] || {};
+        const baseUsdPrice = basePrices['usd'];
+        
+        // Set fiat rates directly from API response
+        fiatTargets.forEach(fiat => {
+          if (basePrices[fiat]) {
+            rates[fiat] = basePrices[fiat];
+          }
+        });
 
-        rates = response.data[baseCurrency] || {};
+        // For crypto-to-crypto, get target crypto prices in USD and calculate cross rate
+        if (cryptoTargets.length > 0 && baseUsdPrice) {
+          const cryptoResponse = await axios.get(`${COINGECKO_API}/simple/price`, {
+            params: {
+              ids: cryptoTargets.join(','),
+              vs_currencies: 'usd',
+            },
+            timeout: 10000,
+          });
+
+          cryptoTargets.forEach(cryptoId => {
+            const targetUsdPrice = cryptoResponse.data[cryptoId]?.usd;
+            if (targetUsdPrice) {
+              // Cross rate: baseUsdPrice / targetUsdPrice
+              // If 1 BTC = 90000 USD and 1 ETH = 3000 USD, then 1 BTC = 90000/3000 = 30 ETH
+              rates[cryptoId] = baseUsdPrice / targetUsdPrice;
+            }
+          });
+        }
       } else {
-        // For fiat base, we need to get 1/rate for each target
-        // Get all crypto targets priced in the base fiat
-        const cryptoTargets = targetCurrencies.filter(tc => {
-          const curr = currencies.value.find(c => c.id === tc || c.symbol === tc);
-          return curr?.type === 'crypto';
-        });
-
-        const fiatTargets = targetCurrencies.filter(tc => {
-          const curr = currencies.value.find(c => c.id === tc || c.symbol === tc);
-          return curr?.type === 'fiat';
-        });
-
+        // BASE IS FIAT
+        
         // Get crypto prices in base fiat and invert the rate
         if (cryptoTargets.length > 0) {
           const cryptoResponse = await axios.get(`${COINGECKO_API}/simple/price`, {
@@ -183,9 +214,8 @@ export function useCurrencyAPI() {
           });
         }
 
-        // Get fiat to fiat conversion using USD as intermediate
+        // Get fiat to fiat conversion using Bitcoin as reference
         if (fiatTargets.length > 0) {
-          // Use Bitcoin as a reference to get fiat exchange rates
           const btcResponse = await axios.get(`${COINGECKO_API}/simple/price`, {
             params: {
               ids: 'bitcoin',
